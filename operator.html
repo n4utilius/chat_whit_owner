@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Operator</title>
+  <script src="http://localhost:8085/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+
+  <script type="text/javascript">
+    var socket = io.connect('http://localhost:8085');
+
+      $("form").on("submit", function(event) {
+        event.preventDefault();
+        alert("lo que sea")
+      });
+
+    socket.on('connect', function () { 
+      socket.emit('operator', 'Operator', function (data) {
+        console.log(data); //callback function
+      });
+    });
+    //send a message back to the client
+
+    //NOTE-> CLIENT_SOCKET_ID is the id of a client's socket; you will see one if you emit message from a client
+    //Using that to indicate which client this message shoudl go to
+    
+
+    //register your receive message callback
+    socket.on("message", function(client, msg){
+      client_chat = "#chat_" + client;
+      if( $(client_chat).length != 0 ){
+        $(client_chat + " ul.messages").append("<li> <label class='the_other'> Client: </label>" + msg + "</li>") // callback after sending message
+        //alert("ola k ase")
+      }else{  
+        new_chat = '<div class="chat" id="chat_' + client + '">'
+        new_chat += '  <form class="formulario" >'
+        new_chat += '    <input class="message" />'
+        new_chat += '    <input type="submit" class="enviar" />'
+        new_chat += '  </form>'
+        new_chat += ' <ul class="messages"> ' 
+        new_chat += '   <li> <label class="the_other"> Cliente: </label>' + msg + '</li>'
+        new_chat += ' </ul>'
+        new_chat += '</div>'
+        $("#chat_area").append(new_chat);
+      }
+    });
+
+    $(document).on("ready", function(){
+    //send a message to the server(to the operator)-> remember this is 1 site with 1 operator
+      /*
+        $("form").on("submit", function(e){
+          client_chat = $(this).parent("div.chat").attr("id");
+          
+            socket.emit( 
+              'message',
+              { 
+                to_client: client_chat.split("chat_")[1], 
+                text : $("#" + client_chat + " input.message").val()
+              }, 
+              function (data) {
+                $("#" + client_chat + " ul.messages").append("<li> I: " + data.text + "</li>") // callback after sending message
+                console.log(data.text)
+              }
+            );
+          return false;
+        })
+      */
+
+        $("form").live("submit", function(e){
+          //e.preventDefault()
+          client_chat = $(this).parent("div.chat").attr("id");
+          
+            socket.emit( 
+              'message',
+              { 
+                to_client: client_chat.split("chat_")[1], 
+                text : $("#" + client_chat + " input.message").val()
+              }, 
+              function (data) {
+                $("#" + client_chat + " ul.messages").append("<li> I: " + data.text + "</li>") // callback after sending message
+                console.log(data.text)
+              }
+            );
+          return false;
+        })
+      
+    })
+
+  </script>
+  <style type="text/css">
+    #chat_area{
+      min-height: 640px;
+      min-width: 90%;
+      padding: 10px;
+      margin: 10px;
+      border:3px solid #e00;
+      overflow:scroll;
+    }
+    .chat{
+      border:dotted 1px #000;
+      margin:10px;
+      padding: 10px
+      max-height: 400px;
+      max-width: 23%;
+      min-height: 400px;
+      min-width: 23%;
+      float:left;
+    }
+    .the_other{
+      color:green;
+      font-size: 1.3;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat_area">
+    <div class="chat" id="chat_eFw1iGv8cdhjmCwGIiFA">  
+      <form class="formulario">    
+        <input class="message">    
+        <input type="submit" class="enviar">  
+      </form> 
+      <ul class="messages">   
+        <li> <label class='the_other'> Client: </label> sassassa1</li> 
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>
