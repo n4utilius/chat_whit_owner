@@ -46,27 +46,7 @@
 
     $(document).on("ready", function(){
     //send a message to the server(to the operator)-> remember this is 1 site with 1 operator
-      /*
-        $("form").on("submit", function(e){
-          client_chat = $(this).parent("div.chat").attr("id");
-          
-            socket.emit( 
-              'message',
-              { 
-                to_client: client_chat.split("chat_")[1], 
-                text : $("#" + client_chat + " input.message").val()
-              }, 
-              function (data) {
-                $("#" + client_chat + " ul.messages").append("<li> I: " + data.text + "</li>") // callback after sending message
-                console.log(data.text)
-              }
-            );
-          return false;
-        })
-      */
-
-        $("form").live("submit", function(e){
-          //e.preventDefault()
+        $(document).on("submit", "form", function(e){  
           client_chat = $(this).parent("div.chat").attr("id");
           
             socket.emit( 
